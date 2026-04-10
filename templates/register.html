@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+{% block title %}Register — SportsCampus{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #f0c4a8 0%, #e8927c 40%, #d4764e 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .auth-card {
+    background: rgba(250,248,244,0.93);
+    backdrop-filter: blur(20px);
+    border: 0.5px solid rgba(255,255,255,0.7);
+    border-radius: 28px;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .auth-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: #1a1814;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .auth-sub {
+    font-size: 0.85rem;
+    color: #7a7570;
+    margin-bottom: 2rem;
+  }
+
+  .form-group { margin-bottom: 1.1rem; }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #7a7570;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  input[type="email"],
+  input[type="password"],
+  input[type="text"],
+  select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 0.5px solid rgba(26,24,20,0.15);
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    color: #1a1814;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: #e8927c;
+    box-shadow: 0 0 0 3px rgba(232,146,124,0.12);
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.95rem;
+    background: #1a1814;
+    color: #faf8f4;
+    border: none;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .btn-submit:hover {
+    background: #d4764e;
+    transform: translateY(-1px);
+  }
+
+  .auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.83rem;
+    color: #7a7570;
+  }
+
+  .auth-footer a {
+    color: #c05a30;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .flash-error {
+    background: #fde8e8;
+    color: #a33;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.84rem;
+    margin-bottom: 1.25rem;
+    border: 0.5px solid #f5c0c0;
+  }
+
+  .flash-success {
+    background: #e8f5ee;
+    color: #2d6a4f;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.84rem;
+    margin-bottom: 1.25rem;
+    border: 0.5px solid #a8dfc0;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: rgba(26,24,20,0.5);
+    text-decoration: none;
+    margin-bottom: 1.75rem;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: #1a1814; }
+
+  .note {
+    font-size: 0.78rem;
+    color: #7a7570;
+    margin-top: 0.75rem;
+    padding: 0.65rem 0.9rem;
+    background: rgba(26,24,20,0.04);
+    border-radius: 10px;
+    line-height: 1.5;
+  }
+</style>
+
+<div class="auth-card">
+  <a href="/" class="back-link">← Back to home</a>
+  <a href="/" class="auth-logo">SportsCampus</a>
+  <p class="auth-sub">Create your student account</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST" action="/register">
+    <div class="form-group">
+      <label>Full name</label>
+      <input type="text" name="name" placeholder="Arjun Reddy" required>
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="you@college.edu" required>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="Min. 6 characters" required minlength="6">
+    </div>
+
+    <div class="form-group">
+      <label>Your college</label>
+      <select name="college_id" required>
+        <option value="">Select your college…</option>
+        {% for college in colleges %}
+          <option value="{{ college.id }}">{{ college.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn-submit">Create account →</button>
+  </form>
+
+  <p class="note">
+    Coaches and admins are added by their college administrator. Only students can self-register.
+  </p>
+
+  <div class="auth-footer">
+    Already have an account? <a href="/login">Sign in</a>
+  </div>
+</div>
+{% endblock %}

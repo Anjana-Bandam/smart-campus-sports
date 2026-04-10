@@ -1,0 +1,835 @@
+{% extends "base.html" %} {% block title %}Coach Dashboard — SportsCampus{%
+endblock %} {% block content %}
+<style>
+  @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap");
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  :root {
+    --blue: #1a6bab;
+    --blue-deep: #0d3b6e;
+    --blue-light: #4d9fd6;
+    --orange: #e86a2e;
+    --ink: #0a1628;
+    --muted: #4a6080;
+    --green: #059669;
+    --red: #dc2626;
+    --font-d: "Playfair Display", Georgia, serif;
+    --font-b: "DM Sans", sans-serif;
+  }
+  body {
+    font-family: var(--font-b);
+    background: linear-gradient(
+      160deg,
+      #7ec8e3 0%,
+      #a8d8ea 30%,
+      #c5e8f5 60%,
+      #b0d4e8 100%
+    );
+    background-attachment: fixed;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  .layout {
+    display: flex;
+    min-height: 100vh;
+  }
+  .sidebar {
+    width: 225px;
+    background: linear-gradient(180deg, #0d3b6e 0%, #0a2d54 50%, #071e3d 100%);
+    padding: 1.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 50;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 4px 0 24px rgba(7, 30, 61, 0.3);
+  }
+  .s-logo {
+    font-family: var(--font-d);
+    font-size: 1.2rem;
+    color: #fff;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+  .s-portal {
+    font-size: 0.68rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #e8a06a;
+    margin-bottom: 2rem;
+  }
+  .s-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.22);
+    padding: 0 0.5rem;
+    margin-bottom: 0.35rem;
+    margin-top: 1.25rem;
+  }
+  .s-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.18s;
+    margin-bottom: 0.1rem;
+    cursor: pointer;
+  }
+  .s-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+  .s-link.active {
+    background: rgba(232, 160, 106, 0.18);
+    color: #e8a06a;
+    border: 1px solid rgba(232, 160, 106, 0.25);
+  }
+  .s-bottom {
+    margin-top: auto;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .s-user {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.75rem;
+  }
+  .s-avatar {
+    width: 34px;
+    height: 34px;
+    background: linear-gradient(135deg, #e86a2e, #f4956a);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .s-uname {
+    font-size: 0.83rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+  }
+  .s-urole {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.3);
+    margin-top: 1px;
+  }
+  .s-logout {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: rgba(255, 120, 120, 0.55);
+    text-decoration: none;
+    padding: 0.45rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.18s;
+  }
+  .s-logout:hover {
+    background: rgba(255, 100, 100, 0.08);
+    color: rgba(255, 120, 120, 0.9);
+  }
+  .main {
+    margin-left: 225px;
+    flex: 1;
+    padding: 2.25rem 2rem;
+    max-width: calc(100vw - 225px);
+  }
+  .topbar {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .topbar-left h1 {
+    font-family: var(--font-d);
+    font-size: 2rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .topbar-left h1 em {
+    font-style: italic;
+    color: var(--orange);
+    font-weight: 400;
+  }
+  .topbar-left p {
+    font-size: 0.875rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+  .topbar-date {
+    font-size: 0.78rem;
+    color: var(--muted);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    padding: 0.45rem 1rem;
+    border-radius: 100px;
+    white-space: nowrap;
+  }
+  .flash {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 1.25rem;
+    font-size: 0.84rem;
+    font-weight: 500;
+  }
+  .flash-success {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+  }
+  .flash-error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+  .tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    padding: 0.5rem 1.1rem;
+    border-radius: 100px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.4);
+    color: var(--muted);
+    font-size: 0.83rem;
+    font-family: var(--font-b);
+    cursor: pointer;
+    transition: all 0.18s;
+    font-weight: 500;
+  }
+  .tab-btn:hover {
+    background: rgba(255, 255, 255, 0.65);
+    color: var(--ink);
+  }
+  .tab-btn.active {
+    background: var(--orange);
+    color: #fff;
+    border-color: var(--orange);
+  }
+  .tab-pane {
+    display: none;
+  }
+  .tab-pane.active {
+    display: block;
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .card-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.75rem;
+    align-items: end;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+  .form-group label {
+    font-size: 0.72rem;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 0.6rem 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    font-size: 0.87rem;
+    font-family: var(--font-b);
+    background: rgba(255, 255, 255, 0.7);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.18s;
+  }
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: var(--orange);
+    background: rgba(255, 255, 255, 0.9);
+  }
+  .form-group textarea {
+    resize: vertical;
+    min-height: 65px;
+  }
+  .btn-add {
+    padding: 0.62rem 1.4rem;
+    background: var(--orange);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: var(--font-b);
+    cursor: pointer;
+    transition: background 0.18s;
+    white-space: nowrap;
+    align-self: end;
+  }
+  .btn-add:hover {
+    background: var(--ink);
+  }
+  .tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+  .tbl th {
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    padding: 0 0.75rem 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  .tbl td {
+    padding: 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    vertical-align: middle;
+  }
+  .tbl tr:last-child td {
+    border-bottom: none;
+  }
+  .tbl tr:hover td {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  .btn-view {
+    padding: 0.28rem 0.75rem;
+    background: rgba(26, 107, 171, 0.1);
+    color: var(--blue);
+    border: 1px solid rgba(26, 107, 171, 0.2);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.18s;
+  }
+  .btn-view:hover {
+    background: var(--blue);
+    color: #fff;
+  }
+  .badge {
+    font-size: 0.68rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 100px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .b-upcoming {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+  .b-open {
+    background: #ecfdf5;
+    color: #059669;
+  }
+  .b-closed {
+    background: #f1f5f9;
+    color: #64748b;
+  }
+  .b-practice {
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+  .b-trial {
+    background: #fff7ed;
+    color: #c2410c;
+  }
+  .b-match {
+    background: #faf5ff;
+    color: #7c3aed;
+  }
+  .empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--muted);
+    font-size: 0.83rem;
+  }
+  @media (max-width: 768px) {
+    .sidebar {
+      transform: translateX(-100%);
+    }
+    .main {
+      margin-left: 0;
+      max-width: 100vw;
+      padding: 1.25rem;
+    }
+  }
+</style>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a href="/" class="s-logo">SportsCampus</a>
+    <span class="s-portal">Coach Portal</span>
+    <span class="s-label">Navigation</span>
+    <a class="s-link active" onclick="switchTab('trials', this)">🏅 Trials</a>
+    <a class="s-link" onclick="switchTab('schedule', this)">📅 Schedule</a>
+    <a class="s-link" onclick="switchTab('attendance', this)">✅ Attendance</a>
+    <div class="s-bottom">
+      <div class="s-user">
+        <div class="s-avatar">{{ session.user_name[0].upper() }}</div>
+        <div>
+          <div class="s-uname">{{ session.user_name }}</div>
+          <div class="s-urole">Coach</div>
+        </div>
+      </div>
+      <a href="/logout" class="s-logout">↩ Sign out</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    {% with messages = get_flashed_messages(with_categories=true) %} {% for
+    category, message in messages %}
+    <div class="flash flash-{{ category }}">{{ message }}</div>
+    {% endfor %} {% endwith %}
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Coach <em>Dashboard</em></h1>
+        <p>Manage trials, schedules and attendance for your students.</p>
+      </div>
+      <span class="topbar-date" id="live-date"></span>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('trials', this)">
+        🏅 Trials
+      </button>
+      <button class="tab-btn" onclick="switchTab('schedule', this)">
+        📅 Schedule
+      </button>
+      <button class="tab-btn" onclick="switchTab('attendance', this)">
+        ✅ Attendance
+      </button>
+    </div>
+
+    <!-- TRIALS TAB -->
+    <div class="tab-pane active" id="tab-trials">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">➕ Create New Trial</span>
+        </div>
+        <form method="POST" action="/coach/trials/create">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Sport *</label>
+              <select name="sport_id" required>
+                <option value="">— Select —</option>
+                {% for sp in sports %}
+                <option value="{{ sp.id }}">{{ sp.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Venue</label>
+              <select name="facility_id">
+                <option value="">— Select —</option>
+                {% for f in facilities %}
+                <option value="{{ f.id }}">{{ f.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date *</label>
+              <input type="date" name="date" required />
+            </div>
+            <div class="form-group">
+              <label>Time *</label>
+              <input type="time" name="time" required />
+            </div>
+            <div class="form-group">
+              <label>Max participants</label>
+              <input type="number" name="max_participants" value="20" min="1" />
+            </div>
+            <div class="form-group">
+              <label>Requirements</label>
+              <input
+                type="text"
+                name="requirements"
+                placeholder="e.g. Bring kit"
+              />
+            </div>
+            <button type="submit" class="btn-add">Create Trial</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">🏅 My Trials ({{ trials|length }})</span>
+        </div>
+        {% if trials %}
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Sport</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Venue</th>
+              <th>Registrations</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in trials %}
+            <tr>
+              <td><strong>{{ t.sport_name }}</strong></td>
+              <td>{{ t.date }}</td>
+              <td>{{ t.time }}</td>
+              <td>{{ t.facility_name or 'TBA' }}</td>
+              <td>{{ t.reg_count }} / {{ t.max_participants }}</td>
+              <td>
+                <span class="badge b-{{ t.status }}">{{ t.status }}</span>
+              </td>
+              <td>
+                <a
+                  href="/coach/trials/{{ t.id }}/registrations"
+                  class="btn-view"
+                  >View →</a
+                >
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty">
+          No trials created yet. Create your first trial above!
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- SCHEDULE TAB -->
+    <div class="tab-pane" id="tab-schedule">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">➕ Create Practice Session</span>
+        </div>
+        <form method="POST" action="/coach/schedule/create">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Sport *</label>
+              <select name="sport_id" required>
+                <option value="">— Select —</option>
+                {% for sp in sports %}
+                <option value="{{ sp.id }}">{{ sp.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Facility</label>
+              <select name="facility_id">
+                <option value="">— Select —</option>
+                {% for f in facilities %}
+                <option value="{{ f.id }}">{{ f.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date *</label>
+              <input type="date" name="date" required />
+            </div>
+            <div class="form-group">
+              <label>Start time *</label>
+              <input type="time" name="start_time" required />
+            </div>
+            <div class="form-group">
+              <label>End time *</label>
+              <input type="time" name="end_time" required />
+            </div>
+            <div class="form-group">
+              <label>Session type</label>
+              <select name="session_type">
+                <option value="practice">Practice</option>
+                <option value="match">Match</option>
+                <option value="trial">Trial</option>
+              </select>
+            </div>
+            <button type="submit" class="btn-add">Create</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">📅 Upcoming Sessions</span>
+        </div>
+        {% if schedules %}
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Sport</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Venue</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for sc in schedules %}
+            <tr>
+              <td><strong>{{ sc.sport_name }}</strong></td>
+              <td>{{ sc.date }}</td>
+              <td>{{ sc.start_time }} – {{ sc.end_time }}</td>
+              <td>{{ sc.facility_name or 'TBA' }}</td>
+              <td>
+                <span class="badge b-{{ sc.session_type }}"
+                  >{{ sc.session_type }}</span
+                >
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty">No sessions scheduled yet.</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- ATTENDANCE TAB -->
+    <div class="tab-pane" id="tab-attendance">
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">✅ Mark Attendance</span>
+        </div>
+        {% if schedules %} {% set selected = schedules[0].id %} {% set att =
+        attendance_map.get(selected) %} {% if att %}
+        <!-- Attendance already marked -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">Attendance Already Recorded</span>
+          </div>
+
+          <div
+            style="
+              background: #ffffff;
+              border-radius: 16px;
+              padding: 1.5rem 1.8rem;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+              margin-bottom: 1.5rem;
+            "
+          >
+            <h3
+              style="margin: 0 0 1rem 0; font-size: 1.15rem; font-weight: 600"
+            >
+              Attendance Already Recorded
+            </h3>
+
+            <div style="margin-bottom: 1.2rem">
+              <h4
+                style="
+                  margin-bottom: 0.5rem;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  color: #0f5132;
+                "
+              >
+                ✔ Present Students
+              </h4>
+
+              <ul style="list-style: none; padding-left: 0">
+                {% for s in students %} {% if att.get(s.id) == 'present' %}
+                <li
+                  style="
+                    padding: 0.45rem 0.75rem;
+                    border-left: 4px solid #198754;
+                    background: #f0fff4;
+                    margin-bottom: 0.4rem;
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                  "
+                >
+                  <span style="color: #198754; font-weight: 700">•</span> {{
+                  s.name }}
+                </li>
+                {% endif %} {% endfor %}
+              </ul>
+            </div>
+
+            <div>
+              <h4
+                style="
+                  margin-bottom: 0.5rem;
+                  font-size: 1rem;
+                  font-weight: 600;
+                  color: #842029;
+                "
+              >
+                ✖ Absent Students
+              </h4>
+
+              <ul style="list-style: none; padding-left: 0">
+                {% for s in students %} {% if att.get(s.id) == 'absent' %}
+                <li
+                  style="
+                    padding: 0.45rem 0.75rem;
+                    border-left: 4px solid #dc3545;
+                    background: #fff5f5;
+                    margin-bottom: 0.4rem;
+                    border-radius: 8px;
+                    font-size: 0.9rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                  "
+                >
+                  <span style="color: #dc3545; font-weight: 700">•</span> {{
+                  s.name }}
+                </li>
+                {% endif %} {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {% else %}
+        <!-- Attendance NOT marked — show form -->
+        <form method="POST" action="/coach/attendance/mark">
+          <div
+            class="form-group"
+            style="margin-bottom: 1.25rem; max-width: 320px"
+          >
+            <label>Select session</label>
+            <select name="schedule_id" required>
+              {% for sc in schedules %}
+              <option value="{{ sc.id }}">
+                {{ sc.sport_name }} — {{ sc.date }} {{ sc.start_time }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <p
+            style="font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem"
+          >
+            Check all students who are <strong>present</strong>:
+          </p>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+              gap: 0.6rem;
+              margin-bottom: 1.25rem;
+            "
+          >
+            {% for s in students %}
+            <label
+              style="
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                padding: 0.6rem 0.85rem;
+                background: rgba(255, 255, 255, 0.6);
+                border-radius: 10px;
+                cursor: pointer;
+                font-size: 0.85rem;
+                font-weight: 500;
+              "
+            >
+              <input
+                type="checkbox"
+                name="present"
+                value="{{ s.id }}"
+                style="width: 16px; height: 16px; accent-color: #0d3b6e"
+              />
+              {{ s.name }}
+            </label>
+            {% endfor %}
+          </div>
+
+          <button type="submit" class="btn-add">Save Attendance</button>
+        </form>
+        {% endif %} {% else %}
+        <div class="empty">Create a schedule first to mark attendance.</div>
+        {% endif %}
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const d = new Date();
+  document.getElementById("live-date").textContent = d.toLocaleDateString(
+    "en-IN",
+    { weekday: "long", day: "numeric", month: "long", year: "numeric" },
+  );
+
+  function switchTab(name, el) {
+    document
+      .querySelectorAll(".tab-pane")
+      .forEach((p) => p.classList.remove("active"));
+    document
+      .querySelectorAll(".tab-btn")
+      .forEach((b) => b.classList.remove("active"));
+    document.getElementById("tab-" + name).classList.add("active");
+    if (el) el.classList.add("active");
+  }
+
+  // Auto-open correct tab from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const tab = urlParams.get("tab");
+  if (tab) {
+    const btn = document.querySelector(`.tab-btn[onclick*="'${tab}'"]`);
+    switchTab(tab, btn);
+  }
+</script>
+{% endblock %}

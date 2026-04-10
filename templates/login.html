@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% block title %}Login — SportsCampus{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    min-height: 100vh;
+    background: linear-gradient(160deg, #b8d9f0 0%, #7ab8e0 40%, #c4dff0 70%, #e8d5c4 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .auth-card {
+    background: rgba(250,248,244,0.92);
+    backdrop-filter: blur(20px);
+    border: 0.5px solid rgba(255,255,255,0.7);
+    border-radius: 28px;
+    padding: 3rem 2.5rem;
+    width: 100%;
+    max-width: 420px;
+  }
+
+  .auth-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    color: #1a1814;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .auth-sub {
+    font-size: 0.85rem;
+    color: #7a7570;
+    margin-bottom: 2rem;
+  }
+
+  .role-tabs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    background: rgba(26,24,20,0.06);
+    padding: 0.35rem;
+    border-radius: 14px;
+  }
+
+  .role-tab {
+    padding: 0.6rem 0.5rem;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 0.82rem;
+    color: #7a7570;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+    font-weight: 400;
+  }
+
+  .role-tab.active {
+    background: white;
+    color: #1a1814;
+    font-weight: 500;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .form-group {
+    margin-bottom: 1.1rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #7a7570;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  input[type="email"],
+  input[type="password"],
+  input[type="text"],
+  select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 0.5px solid rgba(26,24,20,0.15);
+    border-radius: 12px;
+    font-size: 0.92rem;
+    font-family: 'DM Sans', sans-serif;
+    background: white;
+    color: #1a1814;
+    outline: none;
+    transition: border-color 0.2s;
+    appearance: none;
+  }
+
+  input:focus, select:focus {
+    border-color: #6aaed6;
+    box-shadow: 0 0 0 3px rgba(106,174,214,0.12);
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.95rem;
+    background: #1a1814;
+    color: #faf8f4;
+    border: none;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .btn-submit:hover {
+    background: #6aaed6;
+    transform: translateY(-1px);
+  }
+
+  .auth-footer {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.83rem;
+    color: #7a7570;
+  }
+
+  .auth-footer a {
+    color: #1a4a7a;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .flash-error {
+    background: #fde8e8;
+    color: #a33;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.84rem;
+    margin-bottom: 1.25rem;
+    border: 0.5px solid #f5c0c0;
+  }
+
+  .flash-success {
+    background: #e8f5ee;
+    color: #2d6a4f;
+    border-radius: 10px;
+    padding: 0.75rem 1rem;
+    font-size: 0.84rem;
+    margin-bottom: 1.25rem;
+    border: 0.5px solid #a8dfc0;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.8rem;
+    color: rgba(26,24,20,0.5);
+    text-decoration: none;
+    margin-bottom: 1.75rem;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: #1a1814; }
+</style>
+
+<div class="auth-card">
+  <a href="/" class="back-link">← Back to home</a>
+  <a href="/" class="auth-logo">SportsCampus</a>
+  <p class="auth-sub">Sign in to your account</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST" action="/login">
+    <!-- Role selector -->
+    <div class="role-tabs">
+      <button type="button" class="role-tab active" onclick="setRole('student', this)">🎓 Student</button>
+      <button type="button" class="role-tab" onclick="setRole('coach', this)">🏅 Coach</button>
+      <button type="button" class="role-tab" onclick="setRole('admin', this)">⚙️ Admin</button>
+    </div>
+
+    <input type="hidden" name="role" id="role-input" value="student">
+
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" name="email" placeholder="you@college.edu" required>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" name="password" placeholder="••••••••" required>
+    </div>
+
+    <button type="submit" class="btn-submit">Sign in →</button>
+  </form>
+
+  <div class="auth-footer">
+    New student? <a href="/register">Create an account</a>
+  </div>
+</div>
+
+<script>
+  function setRole(role, el) {
+    document.getElementById('role-input').value = role;
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+  }
+</script>
+{% endblock %}

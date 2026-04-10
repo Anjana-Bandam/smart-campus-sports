@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+{% block title %}My Profile — SportsCampus{% endblock %}
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue: #1a6bab; --blue-deep: #0d3b6e; --blue-light: #4d9fd6;
+    --orange: #e86a2e; --ink: #0a1628; --muted: #4a6080;
+    --green: #059669;
+    --font-d: 'Playfair Display', Georgia, serif;
+    --font-b: 'DM Sans', sans-serif;
+  }
+  body { font-family: var(--font-b); background: linear-gradient(160deg, #7ec8e3 0%, #a8d8ea 30%, #c5e8f5 60%, #b0d4e8 100%); background-attachment: fixed; color: var(--ink); min-height: 100vh; }
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar { width: 225px; background: linear-gradient(180deg, #0d3b6e 0%, #0a2d54 50%, #071e3d 100%); padding: 1.75rem 1rem; display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 50; border-right: 1px solid rgba(255,255,255,0.08); box-shadow: 4px 0 24px rgba(7,30,61,0.3); }
+  .s-logo { font-family: var(--font-d); font-size: 1.2rem; color: #fff; text-decoration: none; display: block; margin-bottom: 0.25rem; }
+  .s-portal { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: #7ec8e3; margin-bottom: 2rem; }
+  .s-label { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.22); padding: 0 0.5rem; margin-bottom: 0.35rem; margin-top: 1.25rem; }
+  .s-link { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; border-radius: 10px; color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; transition: all 0.18s; margin-bottom: 0.1rem; }
+  .s-link:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .s-link.active { background: rgba(126,200,227,0.18); color: #7ec8e3; border: 1px solid rgba(126,200,227,0.25); }
+  .s-bottom { margin-top: auto; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08); }
+  .s-user { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.75rem; }
+  .s-avatar-lg { width: 34px; height: 34px; background: linear-gradient(135deg, #1a6bab, #4d9fd6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; color: #fff; flex-shrink: 0; }
+  .s-uname { font-size: 0.83rem; color: rgba(255,255,255,0.8); font-weight: 500; }
+  .s-urole { font-size: 0.68rem; color: rgba(255,255,255,0.3); margin-top: 1px; }
+  .s-logout { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: rgba(255,120,120,0.55); text-decoration: none; padding: 0.45rem 0.75rem; border-radius: 8px; transition: all 0.18s; }
+  .s-logout:hover { background: rgba(255,100,100,0.08); color: rgba(255,120,120,0.9); }
+  .main { margin-left: 225px; flex: 1; padding: 2.25rem 2rem; max-width: calc(100vw - 225px); }
+  .profile-hero { background: rgba(255,255,255,0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.8); border-radius: 24px; padding: 2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .avatar-circle { width: 72px; height: 72px; background: linear-gradient(135deg, #0d3b6e, #4d9fd6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-d); font-size: 1.8rem; color: #fff; font-weight: 600; flex-shrink: 0; }
+  .profile-info h2 { font-family: var(--font-d); font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em; }
+  .profile-info h2 em { font-style: italic; color: var(--blue); font-weight: 400; }
+  .profile-meta { font-size: 0.85rem; color: var(--muted); margin-top: 0.25rem; }
+  .profile-badges { display: flex; gap: 0.5rem; margin-top: 0.65rem; flex-wrap: wrap; }
+  .p-badge { font-size: 0.72rem; padding: 0.25rem 0.75rem; border-radius: 100px; font-weight: 500; }
+  .pb-college { background: rgba(13,59,110,0.1); color: var(--blue-deep); }
+  .pb-role    { background: rgba(5,150,105,0.1); color: #059669; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .card { background: rgba(255,255,255,0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.8); border-radius: 20px; padding: 1.5rem; margin-bottom: 1.25rem; }
+  .card-title { font-size: 0.95rem; font-weight: 600; color: var(--ink); margin-bottom: 1.25rem; }
+  .p-row { margin-bottom: 1rem; }
+  .p-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--muted); margin-bottom: 0.35rem; font-weight: 500; }
+  .p-bg { height: 8px; background: rgba(0,0,0,0.08); border-radius: 100px; overflow: hidden; }
+  .p-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--blue-light), var(--blue-deep)); }
+  .score-big { text-align: center; padding: 1rem; background: rgba(13,59,110,0.06); border-radius: 14px; margin-bottom: 1.25rem; }
+  .score-num { font-family: var(--font-d); font-size: 2.5rem; font-weight: 600; color: var(--blue-deep); line-height: 1; }
+  .score-label { font-size: 0.75rem; color: var(--muted); margin-top: 0.25rem; }
+  .reg-item { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid rgba(0,0,0,0.06); gap: 0.75rem; }
+  .reg-item:last-child { border-bottom: none; }
+  .reg-sport { font-size: 0.9rem; font-weight: 500; }
+  .reg-date  { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+  .badge { font-size: 0.68rem; padding: 0.2rem 0.65rem; border-radius: 100px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .b-pending    { background: #fff7ed; color: #c2410c; }
+  .b-approved   { background: #ecfdf5; color: #059669; }
+  .b-waitlisted { background: #ede9fe; color: #6d28d9; }
+  .b-rejected   { background: #fef2f2; color: #b91c1c; }
+  .empty { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.83rem; }
+  .remarks-box { margin-top: 1rem; padding: 0.75rem 1rem; background: rgba(232,106,46,0.06); border-left: 3px solid var(--orange); border-radius: 0 10px 10px 0; font-size: 0.83rem; color: var(--muted); font-style: italic; line-height: 1.5; }
+  @media(max-width:900px){ .grid2{ grid-template-columns:1fr; } }
+  @media(max-width:768px){ .sidebar{ transform:translateX(-100%); } .main{ margin-left:0; max-width:100vw; padding:1.25rem; } }
+</style>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a href="/" class="s-logo">SportsCampus</a>
+    <span class="s-portal">Student Portal</span>
+    <span class="s-label">Navigation</span>
+    <a href="/student/dashboard" class="s-link">🏠 Dashboard</a>
+    <a href="/student/trials"    class="s-link">📋 Trials</a>
+    <a href="/student/profile"   class="s-link active">👤 My Profile</a>
+    <div class="s-bottom">
+      <div class="s-user">
+        <div class="s-avatar-lg">{{ session.user_name[0].upper() }}</div>
+        <div>
+          <div class="s-uname">{{ session.user_name }}</div>
+          <div class="s-urole">Student</div>
+        </div>
+      </div>
+      <a href="/logout" class="s-logout">↩ Sign out</a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- PROFILE HERO -->
+    <div class="profile-hero">
+      <div class="avatar-circle">{{ student.name[0].upper() }}</div>
+      <div class="profile-info">
+        <h2>{{ student.name.split()[0] }} <em>{{ student.name.split()[1] if student.name.split()|length > 1 else '' }}</em></h2>
+        <div class="profile-meta">{{ student.email }}</div>
+        <div class="profile-badges">
+          <span class="p-badge pb-college">🏫 {{ student.college_name }}</span>
+          <span class="p-badge pb-role">🎓 Student Athlete</span>
+          <span class="p-badge pb-role">📋 {{ registrations|length }} Trial{{ 's' if registrations|length != 1 }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+
+      <!-- PERFORMANCE -->
+      <div>
+        <div class="card">
+          <div class="card-title">📊 Performance</div>
+          {% if performances %}
+            {% set p = performances[0] %}
+            <div class="score-big">
+              <div class="score-num">{{ p.total_score }}</div>
+              <div class="score-label">Overall score / 10 · {{ p.sport_name }}</div>
+            </div>
+            {% for label, val in [('Speed', p.speed), ('Agility', p.agility), ('Skill', p.skill), ('Teamwork', p.teamwork)] %}
+            <div class="p-row">
+              <div class="p-label"><span>{{ label }}</span><span>{{ val }} / 10</span></div>
+              <div class="p-bg"><div class="p-fill" style="width:{{ (val/10*100)|round }}%"></div></div>
+            </div>
+            {% endfor %}
+            {% if p.remarks %}
+            <div class="remarks-box">"{{ p.remarks }}"</div>
+            {% endif %}
+          {% else %}
+            <div class="empty">
+              <p style="font-size:1.5rem;margin-bottom:0.5rem">📈</p>
+              No performance data yet.<br>Participate in trials to see your scores here.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- TRIAL REGISTRATIONS -->
+      <div>
+        <div class="card">
+          <div class="card-title">📋 My Trial Registrations</div>
+          {% if registrations %}
+            {% for r in registrations %}
+            <div class="reg-item">
+              <div>
+                <div class="reg-sport">{{ r.sport_name }}</div>
+                <div class="reg-date">📅 {{ r.date }} · ⏰ {{ r.time }}</div>
+              </div>
+              <span class="badge b-{{ r.status }}">{{ r.status }}</span>
+            </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty">
+              <p style="font-size:1.5rem;margin-bottom:0.5rem">📭</p>
+              No trial registrations yet.<br>
+              <a href="/student/trials" style="color:var(--blue);font-weight:500">Browse trials →</a>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if performances|length > 1 %}
+        <div class="card">
+          <div class="card-title">🏆 All Performance Records</div>
+          {% for p in performances %}
+          <div class="reg-item">
+            <div>
+              <div class="reg-sport">{{ p.sport_name }}</div>
+              <div class="reg-date">Score: {{ p.total_score }}/10</div>
+            </div>
+            <div style="display:flex;gap:0.4rem;font-size:0.72rem;color:var(--muted)">
+              <span>S:{{ p.speed }}</span>
+              <span>A:{{ p.agility }}</span>
+              <span>Sk:{{ p.skill }}</span>
+              <span>T:{{ p.teamwork }}</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+    </div>
+  </main>
+</div>
+{% endblock %}

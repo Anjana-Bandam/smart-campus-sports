@@ -1,0 +1,202 @@
+{% extends "base.html" %} {% block title %}SportsCampus — Smart College Sports
+Platform{% endblock %} {% block content %}
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="/" class="nav-logo">SportsCampus</a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#roles">For you</a>
+    <a href="{{ url_for('auth.login') }}">Login</a>
+    <a href="{{ url_for('auth.register') }}" class="btn-nav">Get started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-tag">Smart Campus Sports Platform</span>
+    <h1>Your college sports,<br /><em>finally organised.</em></h1>
+    <p class="hero-sub">
+      From trials to timetables, attendance to performance — everything your
+      college sports team needs, in one place.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('auth.register') }}" class="btn-primary"
+        >Join your college →</a
+      >
+      <a href="#how" class="btn-secondary">See how it works</a>
+    </div>
+    <div class="cards-row">
+      <div class="hero-card">
+        <div class="hero-card-num">3+</div>
+        <div class="hero-card-label">Colleges</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-num">15+</div>
+        <div class="hero-card-label">Sports tracked</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-num">100%</div>
+        <div class="hero-card-label">Free to use</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-num">3</div>
+        <div class="hero-card-label">Roles supported</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPORTS STRIP -->
+<div class="sports-strip">
+  <div class="sports-scroll">
+    <span class="sport-pill">🏀 Basketball</span>
+    <span class="sport-pill">🏏 Cricket</span>
+    <span class="sport-pill">🏸 Badminton</span>
+    <span class="sport-pill">⚽ Football</span>
+    <span class="sport-pill">🏐 Volleyball</span>
+    <span class="sport-pill">🏊 Swimming</span>
+    <span class="sport-pill">🎾 Tennis</span>
+    <span class="sport-pill">🏃 Athletics</span>
+    <span class="sport-pill">🤸 Gymnastics</span>
+    <span class="sport-pill">🥊 Boxing</span>
+    <!-- repeat for smooth loop -->
+    <span class="sport-pill">🏀 Basketball</span>
+    <span class="sport-pill">🏏 Cricket</span>
+    <span class="sport-pill">🏸 Badminton</span>
+    <span class="sport-pill">⚽ Football</span>
+    <span class="sport-pill">🏐 Volleyball</span>
+    <span class="sport-pill">🏊 Swimming</span>
+    <span class="sport-pill">🎾 Tennis</span>
+    <span class="sport-pill">🏃 Athletics</span>
+    <span class="sport-pill">🤸 Gymnastics</span>
+    <span class="sport-pill">🥊 Boxing</span>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-section" id="how">
+  <div class="how-inner">
+    <span class="section-tag">How it works</span>
+    <h2 class="section-title">
+      Simple for everyone,<br /><em>powerful underneath.</em>
+    </h2>
+    <p class="section-sub">
+      Three steps and your entire college sports system is running.
+    </p>
+    <div class="how-grid">
+      <div class="how-card">
+        <span class="how-num">01</span>
+        <span class="how-icon">🏫</span>
+        <h3>College registers</h3>
+        <p>
+          Admin sets up the college profile, adds sports, facilities and coaches
+          in minutes.
+        </p>
+      </div>
+      <div class="how-card">
+        <span class="how-num">02</span>
+        <span class="how-icon">📋</span>
+        <h3>Coaches create trials</h3>
+        <p>
+          Set dates, venues, limits. Students register. The system handles the
+          waitlist automatically.
+        </p>
+      </div>
+      <div class="how-card">
+        <span class="how-num">03</span>
+        <span class="how-icon">🏆</span>
+        <h3>Students get selected</h3>
+        <p>
+          Coaches score performance, system ranks players, final team announced
+          instantly.
+        </p>
+      </div>
+      <div class="how-card">
+        <span class="how-num">04</span>
+        <span class="how-icon">📅</span>
+        <h3>Everyone stays in sync</h3>
+        <p>
+          Practice schedules, announcements, attendance — all in one dashboard
+          per role.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROLES -->
+<div class="roles-section" id="roles">
+  <div class="roles-inner">
+    <span class="section-tag">Built for every role</span>
+    <h2 class="section-title">One platform,<br /><em>three dashboards.</em></h2>
+    <p class="section-sub">
+      Admin, Coach, Student — each gets exactly what they need.
+    </p>
+    <div class="roles-grid">
+      <div class="role-card">
+        <span class="role-badge badge-admin">Admin</span>
+        <h3>College Admin</h3>
+        <p>Full control over your college's sports ecosystem.</p>
+        <ul class="role-features">
+          <li>Add & manage sports</li>
+          <li>Register coaches</li>
+          <li>Manage facilities & slots</li>
+          <li>Post announcements</li>
+          <li>View all schedules</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <span class="role-badge badge-coach">Coach</span>
+        <h3>Sports Coach</h3>
+        <p>Run trials, track attendance and build your team.</p>
+        <ul class="role-features">
+          <li>Create & manage trials</li>
+          <li>Score player performance</li>
+          <li>Auto-rank & select teams</li>
+          <li>Mark attendance</li>
+          <li>Schedule practice sessions</li>
+        </ul>
+      </div>
+      <div class="role-card">
+        <span class="role-badge badge-student">Student</span>
+        <h3>Student Athlete</h3>
+        <p>Register for trials, track your progress, never miss a session.</p>
+        <ul class="role-features">
+          <li>Browse available sports</li>
+          <li>Register for trials</li>
+          <li>View practice timetable</li>
+          <li>Track your performance</li>
+          <li>Get instant notifications</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta-section">
+  <p class="section-tag">Ready to start?</p>
+  <h2 class="section-title">
+    Your college sports deserve <em>better tools.</em>
+  </h2>
+  <p class="section-sub">
+    Join SportsCampus today. Free for all colleges, forever.
+  </p>
+  <div class="hero-actions">
+    <a href="{{ url_for('auth.register_college') }}" class="btn-primary"
+      >Register your college →</a
+    >
+    <a href="{{ url_for('auth.login') }}" class="btn-secondary"
+      >Already have an account</a
+    >
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>SportsCampus — Built for Hyderabad college athletes. &copy; 2026</p>
+</footer>
+
+{% endblock %}

@@ -1,0 +1,282 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — SportsCampus{% endblock %}
+{% block content %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue:       #1a6bab;
+    --blue-deep:  #0d3b6e;
+    --blue-light: #4d9fd6;
+    --orange:     #e86a2e;
+    --ink:        #0a1628;
+    --muted:      #4a6080;
+    --green:      #059669;
+    --green-pale: #ecfdf5;
+    --font-d: 'Playfair Display', Georgia, serif;
+    --font-b: 'DM Sans', sans-serif;
+  }
+  body {
+    font-family: var(--font-b);
+    background: linear-gradient(160deg, #7ec8e3 0%, #a8d8ea 30%, #c5e8f5 60%, #b0d4e8 100%);
+    background-attachment: fixed;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+  .layout { display: flex; min-height: 100vh; }
+  .sidebar {
+    width: 225px;
+    background: linear-gradient(180deg, #0d3b6e 0%, #0a2d54 50%, #071e3d 100%);
+    padding: 1.75rem 1rem;
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0;
+    height: 100vh; overflow-y: auto;
+    z-index: 50;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 4px 0 24px rgba(7,30,61,0.3);
+  }
+  .s-logo { font-family: var(--font-d); font-size: 1.2rem; color: #fff; text-decoration: none; display: block; margin-bottom: 0.25rem; }
+  .s-portal { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: #7ec8e3; margin-bottom: 2rem; }
+  .s-label { font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255,255,255,0.22); padding: 0 0.5rem; margin-bottom: 0.35rem; margin-top: 1.25rem; }
+  .s-link { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.75rem; border-radius: 10px; color: rgba(255,255,255,0.5); text-decoration: none; font-size: 0.85rem; transition: all 0.18s; margin-bottom: 0.1rem; }
+  .s-link:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .s-link.active { background: rgba(126,200,227,0.18); color: #7ec8e3; border: 1px solid rgba(126,200,227,0.25); }
+  .s-bottom { margin-top: auto; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.08); }
+  .s-user { display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.75rem; }
+  .s-avatar { width: 34px; height: 34px; background: linear-gradient(135deg, #1a6bab, #4d9fd6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; color: #fff; flex-shrink: 0; }
+  .s-uname { font-size: 0.83rem; color: rgba(255,255,255,0.8); font-weight: 500; }
+  .s-urole { font-size: 0.68rem; color: rgba(255,255,255,0.3); margin-top: 1px; }
+  .s-logout { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: rgba(255,120,120,0.55); text-decoration: none; padding: 0.45rem 0.75rem; border-radius: 8px; transition: all 0.18s; }
+  .s-logout:hover { background: rgba(255,100,100,0.08); color: rgba(255,120,120,0.9); }
+  .main { margin-left: 225px; flex: 1; padding: 2.25rem 2rem; max-width: calc(100vw - 225px); }
+  .topbar { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+  .topbar-left h1 { font-family: var(--font-d); font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.1; color: var(--ink); }
+  .topbar-left h1 em { font-style: italic; color: var(--blue-deep); font-weight: 400; }
+  .topbar-left p { font-size: 0.875rem; color: var(--muted); margin-top: 0.3rem; }
+  .topbar-date { font-size: 0.78rem; color: var(--muted); background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.75); padding: 0.45rem 1rem; border-radius: 100px; white-space: nowrap; font-weight: 500; }
+  .flash { padding: 0.75rem 1rem; border-radius: 10px; margin-bottom: 1.25rem; font-size: 0.84rem; font-weight: 500; }
+  .flash-success { background: var(--green-pale); color: var(--green); border: 1px solid #a7f3d0; }
+  .flash-error   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+  .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.75rem; }
+  .stat { background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.75); border-radius: 18px; padding: 1.3rem 1.4rem; position: relative; overflow: hidden; transition: transform 0.18s; }
+  .stat:hover { transform: translateY(-2px); }
+  .stat::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 18px 18px 0 0; }
+  .stat:nth-child(1)::before { background: var(--blue); }
+  .stat:nth-child(2)::before { background: var(--orange); }
+  .stat:nth-child(3)::before { background: var(--green); }
+  .stat:nth-child(4)::before { background: #7c3aed; }
+  .stat-n { font-family: var(--font-d); font-size: 2.1rem; font-weight: 600; line-height: 1; color: var(--ink); }
+  .stat-l { font-size: 0.75rem; color: var(--muted); margin-top: 0.35rem; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .card { background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.75); border-radius: 20px; padding: 1.5rem; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .card-title { font-size: 0.92rem; font-weight: 600; color: var(--ink); }
+  .card-more  { font-size: 0.75rem; color: var(--blue); text-decoration: none; font-weight: 500; }
+  .card-more:hover { text-decoration: underline; }
+  .t-row { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .t-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .t-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; background: rgba(13,59,110,0.08); }
+  .t-name { font-size: 0.88rem; font-weight: 500; }
+  .t-meta { font-size: 0.73rem; color: var(--muted); margin-top: 2px; }
+  .btn-reg { margin-left: auto; font-size: 0.73rem; padding: 0.32rem 0.85rem; border-radius: 100px; border: none; cursor: pointer; font-family: var(--font-b); font-weight: 600; background: var(--blue-deep); color: #fff; transition: background 0.18s; white-space: nowrap; }
+  .btn-reg:hover { background: var(--ink); }
+  .sc-row { display: flex; align-items: center; gap: 0.85rem; padding: 0.7rem 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .sc-row:last-child { border-bottom: none; }
+  .sc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-practice { background: var(--blue); }
+  .dot-trial    { background: var(--orange); }
+  .dot-match    { background: #7c3aed; }
+  .sc-info { flex: 1; }
+  .sc-name { font-size: 0.87rem; font-weight: 500; }
+  .sc-sub  { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
+  .sc-time { font-size: 0.72rem; color: var(--muted); white-space: nowrap; text-align: right; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .chip { background: rgba(13,59,110,0.08); color: var(--blue-deep); border: 1px solid rgba(13,59,110,0.15); border-radius: 100px; padding: 0.35rem 0.9rem; font-size: 0.8rem; font-weight: 500; }
+  .ann { padding: 0.85rem 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+  .ann:last-child { border-bottom: none; }
+  .ann-title { font-size: 0.88rem; font-weight: 600; margin-bottom: 0.2rem; }
+  .ann-body  { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+  .ann-date  { font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; }
+  .p-row { margin-bottom: 0.9rem; }
+  .p-label { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .p-bg { height: 7px; background: rgba(0,0,0,0.08); border-radius: 100px; overflow: hidden; }
+  .p-fill { height: 100%; border-radius: 100px; background: linear-gradient(90deg, #4d9fd6, #0d3b6e); }
+  .badge { font-size: 0.68rem; padding: 0.2rem 0.65rem; border-radius: 100px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
+  .b-pending    { background: #fff7ed; color: #c2410c; }
+  .b-approved   { background: #ecfdf5; color: #059669; }
+  .b-waitlisted { background: #ede9fe; color: #6d28d9; }
+  .b-rejected   { background: #fef2f2; color: #b91c1c; }
+  .empty { text-align: center; padding: 2rem 1rem; color: var(--muted); font-size: 0.83rem; }
+  .empty-icon { font-size: 1.75rem; margin-bottom: 0.5rem; display: block; }
+  @media(max-width:900px){ .stats{ grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:768px){
+    .sidebar{ transform:translateX(-100%); }
+    .main{ margin-left:0; max-width:100vw; padding:1.25rem; }
+    .grid{ grid-template-columns:1fr; }
+    .stats{ grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+
+<div class="layout">
+  <aside class="sidebar">
+    <a href="/" class="s-logo">SportsCampus</a>
+    <span class="s-portal">Student Portal</span>
+    <span class="s-label">Navigation</span>
+    <a href="/student/dashboard" class="s-link active">🏠 Dashboard</a>
+    <a href="/student/trials"    class="s-link">📋 Trials</a>
+    <a href="/student/profile"   class="s-link">👤 My Profile</a>
+    <div class="s-bottom">
+      <div class="s-user">
+        <div class="s-avatar">{{ session.user_name[0].upper() }}</div>
+        <div>
+          <div class="s-uname">{{ session.user_name }}</div>
+          <div class="s-urole">Student</div>
+        </div>
+      </div>
+      <a href="/logout" class="s-logout">↩ Sign out</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <h1>Hello, <em>{{ session.user_name.split()[0] }}</em> 👋</h1>
+        <p>Here's everything happening in your college sports.</p>
+      </div>
+      <span class="topbar-date" id="live-date"></span>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="stat-n">{{ sports|length }}</div><div class="stat-l">Sports available</div></div>
+      <div class="stat"><div class="stat-n">{{ trials|length }}</div><div class="stat-l">Upcoming trials</div></div>
+      <div class="stat"><div class="stat-n">{{ attendance_pct }}%</div><div class="stat-l">Attendance rate</div></div>
+      <div class="stat"><div class="stat-n">{{ my_registrations|length }}</div><div class="stat-l">Trials registered</div></div>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">🏅 Upcoming Trials</span>
+          <a href="/student/trials" class="card-more">View all →</a>
+        </div>
+        {% if trials %}
+          {% for t in trials %}
+          <div class="t-row">
+            <div class="t-icon">🏆</div>
+            <div>
+              <div class="t-name">{{ t.sport_name }}</div>
+              <div class="t-meta">📅 {{ t.date }} · ⏰ {{ t.time }} · 📍 {{ t.venue or 'TBA' }}</div>
+            </div>
+            <form method="POST" action="/student/trials/register/{{ t.id }}">
+              <button type="submit" class="btn-reg">Register</button>
+            </form>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty"><span class="empty-icon">📭</span>No upcoming trials right now.</div>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">📝 My Registrations</span></div>
+        {% if my_registrations %}
+          {% for r in my_registrations %}
+          <div class="t-row">
+            <div class="t-icon" style="background:rgba(232,106,46,0.1)">🎯</div>
+            <div>
+              <div class="t-name">{{ r.sport_name }}</div>
+              <div class="t-meta">{{ r.date }} · {{ r.time }}</div>
+            </div>
+            <span class="badge b-{{ r.status }}">{{ r.status }}</span>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty"><span class="empty-icon">📋</span>No trial registrations yet.</div>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">📅 Practice Schedule</span></div>
+        {% if schedules %}
+          {% for sc in schedules %}
+          <div class="sc-row">
+            <div class="sc-dot dot-{{ sc.session_type }}"></div>
+            <div class="sc-info">
+              <div class="sc-name">{{ sc.sport_name }}</div>
+              <div class="sc-sub">{{ sc.facility_name or 'Venue TBA' }} · {{ sc.session_type|capitalize }}</div>
+            </div>
+            <div class="sc-time">{{ sc.date }}<br>{{ sc.start_time }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty"><span class="empty-icon">🗓️</span>No sessions scheduled yet.</div>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">🏟️ Sports at Your College</span></div>
+        {% if sports %}
+          {% set icons = {'Cricket':'🏏','Football':'⚽','Basketball':'🏀','Badminton':'🏸','Volleyball':'🏐','Tennis':'🎾','Swimming':'🏊','Athletics':'🏃','Boxing':'🥊','Kabaddi':'🤼','Chess':'♟️','Table Tennis':'🏓','Hockey':'🏑','Throwball':'🤾'} %}
+          <div class="chips">
+            {% for sp in sports %}
+            <span class="chip">{{ icons.get(sp.name, '🏆') }} {{ sp.name }}</span>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="empty"><span class="empty-icon">⚽</span>No sports added yet by your admin.</div>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">📢 Announcements</span></div>
+        {% if announcements %}
+          {% for a in announcements %}
+          <div class="ann">
+            <div class="ann-title">{{ a.title }}</div>
+            <div class="ann-body">{{ a.content }}</div>
+            <div class="ann-date">{{ a.created_at[:10] }}</div>
+          </div>
+          {% endfor %}
+        {% else %}
+          <div class="empty"><span class="empty-icon">📣</span>No announcements yet.</div>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">📊 My Performance</span>
+          <a href="/student/profile" class="card-more">Full profile →</a>
+        </div>
+        {% if performance %}
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:1.1rem;font-weight:500;text-transform:uppercase;letter-spacing:0.06em">{{ performance.sport_name or 'Sport' }}</p>
+          {% for label, val in [('Speed', performance.speed),('Agility', performance.agility),('Skill', performance.skill),('Teamwork', performance.teamwork)] %}
+          <div class="p-row">
+            <div class="p-label"><span>{{ label }}</span><span>{{ val }}/10</span></div>
+            <div class="p-bg"><div class="p-fill" style="width:{{ (val/10*100)|round }}%"></div></div>
+          </div>
+          {% endfor %}
+          {% if performance.remarks %}
+          <p style="font-size:0.8rem;color:var(--muted);margin-top:1rem;font-style:italic;border-left:3px solid var(--blue);padding-left:0.75rem">"{{ performance.remarks }}"</p>
+          {% endif %}
+        {% else %}
+          <div class="empty"><span class="empty-icon">📈</span>No performance data yet.<br>Participate in trials to see your scores.</div>
+        {% endif %}
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script>
+  const d = new Date();
+  document.getElementById('live-date').textContent =
+    d.toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+</script>
+{% endblock %}
